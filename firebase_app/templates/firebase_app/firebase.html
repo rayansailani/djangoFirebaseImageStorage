@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    Welcome to the firebase + django application
+
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == "success" %}
+    <p>success</p>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'firebase_view' %}" method="POST" enctype="multipart/form-data" id="forms-best"
+        data-properties-url="{% url 'firebase_view' %}">
+        {% csrf_token %}
+        <input type="file" name="files[]" id="files">
+        <button type="button" onclick="uploadFile()">Upload</button>
+        <br>
+        <input type="text" name="url" id="url">
+        <br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
+
+
+
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyBZqDNygIruKXh_P4TEKvlcJWbSFaM8Jpk",
+            authDomain: "djangofirebase-3d88b.firebaseapp.com",
+            projectId: "djangofirebase-3d88b",
+            storageBucket: "djangofirebase-3d88b.appspot.com",
+            messagingSenderId: "1000373511210",
+            appId: "1:1000373511210:web:7eeaeec2c104b6fa154f53",
+            measurementId: "G-5ME3L7TYNX"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var storage = firebase.storage();
+        console.log(firebase);
+
+        function uploadFile() {
+            var file = document.getElementById("files").files[0];
+            var storageref = storage.ref();
+
+            var thisref = storageref.child("images/" + file.name).put(file);
+
+            thisref.on("state_changed", function(snapshot) {
+        },
+        function(error) {
+
+        },
+        function() {
+            //Upload file completed successfull, now we can get the download url
+            thisref.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                var urlElement = document.getElementById('url');
+                urlElement.value = downloadURL;
+            });
+            alert("File uploaded successfully");
+        });
+        }
+
+    </script>
+</body>
+
+</html>
